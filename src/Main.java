@@ -9,22 +9,30 @@ import java.util.Set;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.BooleanLiteral;
+import org.eclipse.jdt.core.dom.CharacterLiteral;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.NullLiteral;
+import org.eclipse.jdt.core.dom.NumberLiteral;
 import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.SimpleType;
+import org.eclipse.jdt.core.dom.StringLiteral;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 public class Main {
 	
-	public static String BASEDIR = "C:\\Users\\jicka_000\\eclipse-workspace\\SENG300_group_a1\\src\\";
+	public static String BASEDIR = "C:\\Users\\Masroor Hussain Syed\\Desktop\\UCalgary Courses\\Seng 300\\Assignment\\Assign 1\\src\\";
 	public static String dirPath;
 
 	public static void main(String[] args) {
-		ArrayList<Types> allTypes = new ArrayList<Types>();
+		
+		String typeArg = args[1];
+		Types aType = new Types(typeArg);
 		
 		try {
 			dirPath = BASEDIR + args[0];
-			allTypes = ParseFilesInDir(dirPath,allTypes);
+			aType = ParseFilesInDir(dirPath,aType,typeArg);
 			
 		} catch (ArrayIndexOutOfBoundsException e) {
 			System.out.println("Error with filename");
@@ -32,78 +40,89 @@ public class Main {
 			System.out.println("Error with IO");
 		}
 		
-		for (Types aType : allTypes) {
-			System.out.println("Type: " + aType.name + 
+		System.out.println("Type: " + aType.name + 
 					", Declarations: " + aType.declarations + 
 					", References: " + aType.references);
-		}
 		
-
 	}
 	
 	//use ASTParse to parse string
-	public static ArrayList<Types> parse(String str, ArrayList<Types> allTypes) {
-		ASTParser parser = ASTParser.newParser(AST.JLS9);
-		parser.setSource(str.toCharArray());
+	public static Types parse(String strFromFile, final Types aType, String typeArg) {
+		ASTParser parser = ASTParser.newParser(AST.JLS8);
+		parser.setSource(strFromFile.toCharArray());
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
  
 		final CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 		
 		cu.accept(new ASTVisitor() {
-			
-			Set<String> names = new HashSet<String>();
-			
-			// Class declarations
-			public boolean visit(TypeDeclaration node) {
-				String name = node.getName().getIdentifier();
-				Types newType = new Types(name,1,0);
-				allTypes.add(newType);
-				
-//				System.out.println("Declaration of '" + name);
-				return true; // do not continue 
-			}
+						
+//			// Class declarations
+//			public boolean visit(TypeDeclaration node) {
+//				String name = node.getName().getIdentifier();
+//				Types newType = new Types(name,1,0);
+//				allTypes.add(newType);
+//				
+////				System.out.println("Declaration of '" + name);
+//				return true; // do not continue 
+//			}
 			
 			// Variable declarations
-			public boolean visit(VariableDeclarationFragment node) {
-				String name = node.getName().getIdentifier();
-				
-				boolean typeExists = false;
-				// If type already exists add to declaration count
-				for (Types aType : allTypes) {
-					if (aType.name.matches(name)) {
-						aType.declarations += 1;
-						typeExists = true;
-					}
-				}
-				// If type is new add new type to list
-				if (!typeExists) {
-					Types newType = new Types(name,1,0);
-					allTypes.add(newType);
-				}
+			public boolean visit(BooleanLiteral node) {
+				String name = "Boolean";
+				setDeclaration(aType,name);
 				
 //				System.out.println("Declaration of '" + name);
 				return false; // do not continue 
 			}
 			
+			// Variable declarations
+			public boolean visit(CharacterLiteral node) {
+				String name = "Char";
+				setDeclaration(aType,name);
+//							System.out.println("Declaration of '" + name);
+				return false; // do not continue 
+			}
+			
+			// Variable declarations
+			public boolean visit(NumberLiteral node) {
+				String name = "Num";
+				setDeclaration(aType,name);
+//										System.out.println("Declaration of '" + name);
+				return false; // do not continue 
+			}
+			
+			// Variable declarations
+			public boolean visit(NullLiteral node) {
+				String name = "Null";
+				setDeclaration(aType,name);
+//													System.out.println("Declaration of '" + name);
+				return false; // do not continue 
+			}
+			
+			// Variable declarations
+			public boolean visit(StringLiteral node) {
+				String name = "String";
+				setDeclaration(aType,name);
+				
+//							System.out.println("Declaration of '" + name);
+				return false; // do not continue 
+			}
+			
 			// Calls to all declarations
-			public boolean visit(SimpleName node) {
-				String existingType = node.getIdentifier();
+			public boolean visit(SimpleType node) {
+				String existingType = node.getName().toString();
 				// If type has been declared earlier in file
-				for (Types aType : allTypes) {
-					if (aType.name.matches(existingType)) {
-						aType.references += 1;
+				if (aType.name.matches(existingType)) {
+					aType.references += 1;
 //						System.out.println("Usage of '" + node);
-					}
-				}	
+				}
 				return true;
 			}
 		});
 		
-		return allTypes;
+		return aType;
 	}
 	
-	
- 
 	//read file content into a string
 	public static String readFileToString(String filePath) throws IOException {
 		StringBuilder fileData = new StringBuilder(1000);
@@ -123,7 +142,7 @@ public class Main {
 	}
  
 	//loop directory to get file list
-	public static ArrayList<Types> ParseFilesInDir(String dirPath, ArrayList<Types> allTypes) throws IOException{ 
+	public static Types ParseFilesInDir(String dirPath, Types aTypes, String typeArg) throws IOException{ 
 		File root = new File(dirPath);
 		File[] files = root.listFiles();
 		String filePath = null;
@@ -132,14 +151,22 @@ public class Main {
 			 filePath = f.getAbsolutePath();
 			 if(f.isFile()){
 				 // Get new types from each file and add to allTypes list
-				 allTypes = parse(readFileToString(filePath),allTypes);
+				 aTypes = parse(readFileToString(filePath),aTypes,typeArg);
 //				 for (Types aType : newTypes) {
 //					 allTypes.add(aType);
 //				 }
 			 }
 		 }
 		 
-		 return allTypes;
+		 return aTypes;
 	}
-
+	
+	public static void setDeclaration(Types aType, String name) {
+		// If type already exists add to declaration count
+		if (aType.name.matches(name)) {
+			aType.declarations += 1;
+		} else {
+			aType = new Types(name,1,0);
+		}
+	}
 }
