@@ -70,9 +70,9 @@ public class Main {
 			}
 			
 			// Class declarations
-			public boolean visit(QualifiedType node) {
+			public boolean visit(SimpleType node) {
 				String name = node.toString();
-				setDeclaration(aType,name);
+				setReference(aType,name);
 				return true;
 			}
 			
