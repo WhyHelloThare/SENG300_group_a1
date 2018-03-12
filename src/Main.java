@@ -7,22 +7,28 @@ import java.util.HashSet;
 import java.util.Set;
  
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.ArrayType;
 import org.eclipse.jdt.core.dom.BooleanLiteral;
 import org.eclipse.jdt.core.dom.CharacterLiteral;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.NullLiteral;
 import org.eclipse.jdt.core.dom.NumberLiteral;
+import org.eclipse.jdt.core.dom.ParameterizedType;
+import org.eclipse.jdt.core.dom.PrimitiveType;
+import org.eclipse.jdt.core.dom.QualifiedType;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.StringLiteral;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.TypeLiteral;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 public class Main {
 	
-	public static String BASEDIR = "C:\\Users\\Masroor Hussain Syed\\Desktop\\UCalgary Courses\\Seng 300\\Assignment\\Assign 1\\src\\";
+	public static String BASEDIR = "C:\\Users\\jicka_000\\eclipse-workspace\\SENG300_group_a1\\src\\";
 	public static String dirPath;
 
 	public static void main(String[] args) {
@@ -48,7 +54,7 @@ public class Main {
 	
 	//use ASTParse to parse string
 	public static Types parse(String strFromFile, final Types aType, String typeArg) {
-		ASTParser parser = ASTParser.newParser(AST.JLS8);
+		ASTParser parser = ASTParser.newParser(AST.JLS9);
 		parser.setSource(strFromFile.toCharArray());
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
  
@@ -56,68 +62,48 @@ public class Main {
 		
 		cu.accept(new ASTVisitor() {
 						
-//			// Class declarations
-//			public boolean visit(TypeDeclaration node) {
-//				String name = node.getName().getIdentifier();
-//				Types newType = new Types(name,1,0);
-//				allTypes.add(newType);
-//				
-////				System.out.println("Declaration of '" + name);
-//				return true; // do not continue 
+			// Class declarations
+			public boolean visit(TypeDeclaration node) {
+				String name = node.getName().toString();
+				setDeclaration(aType,name);
+				return true;
+			}
+			
+			// Class declarations
+			public boolean visit(QualifiedType node) {
+				String name = node.toString();
+				setDeclaration(aType,name);
+				return true;
+			}
+			
+			// Primitive types (byte,short,char,int,long,float,double,boolean,void)
+			public boolean visit(PrimitiveType node) {
+				String name = node.getPrimitiveTypeCode().toString();
+				setReference(aType, name);
+				return true;
+			}
+			
+			// Array types **causes error**
+//			public boolean visit(ArrayType node) {
+//				String name = node.toString();
+//				setReference(aType, name);
+//				return true;
 //			}
 			
 			// Variable declarations
-			public boolean visit(BooleanLiteral node) {
-				String name = "Boolean";
-				setDeclaration(aType,name);
-				
-//				System.out.println("Declaration of '" + name);
-				return false; // do not continue 
-			}
-			
-			// Variable declarations
-			public boolean visit(CharacterLiteral node) {
-				String name = "Char";
-				setDeclaration(aType,name);
-//							System.out.println("Declaration of '" + name);
-				return false; // do not continue 
-			}
-			
-			// Variable declarations
-			public boolean visit(NumberLiteral node) {
-				String name = "Num";
-				setDeclaration(aType,name);
-//										System.out.println("Declaration of '" + name);
-				return false; // do not continue 
-			}
-			
-			// Variable declarations
 			public boolean visit(NullLiteral node) {
-				String name = "Null";
-				setDeclaration(aType,name);
-//													System.out.println("Declaration of '" + name);
-				return false; // do not continue 
+				String name = node.toString();
+				setReference(aType,name);
+				return true;
 			}
 			
 			// Variable declarations
 			public boolean visit(StringLiteral node) {
-				String name = "String";
-				setDeclaration(aType,name);
-				
-//							System.out.println("Declaration of '" + name);
-				return false; // do not continue 
-			}
-			
-			// Calls to all declarations
-			public boolean visit(SimpleType node) {
-				String existingType = node.getName().toString();
-				// If type has been declared earlier in file
-				if (aType.name.matches(existingType)) {
-					aType.references += 1;
-//						System.out.println("Usage of '" + node);
-				}
+				String name = "java.lang.String";
+				setReference(aType,name);
 				return true;
 			}
+			
 		});
 		
 		return aType;
@@ -165,8 +151,12 @@ public class Main {
 		// If type already exists add to declaration count
 		if (aType.name.matches(name)) {
 			aType.declarations += 1;
-		} else {
-			aType = new Types(name,1,0);
+		}
+	}
+	
+	public static void setReference(Types aType, String name) {
+		if (aType.name.matches(name)) {
+			aType.references += 1;
 		}
 	}
 }
