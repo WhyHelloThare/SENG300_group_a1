@@ -1,4 +1,4 @@
-package testing.testFiles;
+package testFiles;
 
 public class TestClassOne {
 	

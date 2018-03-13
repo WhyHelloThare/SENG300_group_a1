@@ -10,5 +10,6 @@
 	<classpathentry kind="lib" path="C:/Users/jicka_000/Desktop/eclipse/plugins/org.eclipse.equinox.preferences_3.7.0.v20170126-2132.jar"/>
 	<classpathentry kind="lib" path="C:/Users/jicka_000/Desktop/eclipse/plugins/org.eclipse.jdt.core_3.13.100.v20171123-1049.jar"/>
 	<classpathentry kind="lib" path="C:/Users/jicka_000/Desktop/eclipse/plugins/org.eclipse.osgi_3.12.50.v20170928-1321.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,4 +1,4 @@
-package testing;
+
 import static org.junit.Assert.*;
 
 import java.io.FileNotFoundException;
@@ -6,10 +6,9 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import main.Main;
-import main.Types;
-
 public class MainTest {
+	
+	public String BASEDIR = "C:\\Users\\jicka_000\\eclipse-workspace\\SENG300_group_a1\\src\\";
 	
 	/**
 	 * Checks that parse method parses string and counts reference to ints.
@@ -77,7 +76,6 @@ public class MainTest {
 	
 	@Test
 	public void testParseFilesInDirForDirWithJavaFilesForReference() throws IOException {
-		String BASEDIR = "C:\\Users\\Masroor Hussain Syed\\Desktop\\UCalgary Courses\\Seng 300\\Assignment\\Assign 1\\src\\testing\\";
 		String dirPath = BASEDIR + "testFiles";
 		String type = "int";
 		Types testType = new Types(type);
@@ -88,7 +86,6 @@ public class MainTest {
 	
 	@Test
 	public void testParseFilesInDirForDirWithJavaFilesForDeclarations() throws IOException {
-		String BASEDIR = "C:\\Users\\Masroor Hussain Syed\\Desktop\\UCalgary Courses\\Seng 300\\Assignment\\Assign 1\\src\\testing\\";
 		String dirPath = BASEDIR + "testFiles";
 		String type = "int";
 		Types testType = new Types(type);
@@ -98,7 +95,6 @@ public class MainTest {
 	
 	@Test(expected = NullPointerException.class)
 	public void testParseFilesInDirForDirNoFilesForReference() throws IOException {
-		String BASEDIR = "C:\\Users\\Masroor Hussain Syed\\Desktop\\UCalgary Courses\\Seng 300\\Assignment\\Assign 1\\src\\testing\\";
 		String dirPath = BASEDIR + "empty";
 		String type = "boolean";
 		Types testType = new Types(type);
@@ -108,7 +104,6 @@ public class MainTest {
 	
 	@Test(expected = NullPointerException.class)
 	public void testParseFilesInDirForDirNoFilesForDeclarations() throws IOException {
-		String BASEDIR = "C:\\Users\\Masroor Hussain Syed\\Desktop\\UCalgary Courses\\Seng 300\\Assignment\\Assign 1\\src\\testing\\";
 		String dirPath = BASEDIR + "empty";
 		String type = "boolean";
 		Types testType = new Types(type);
@@ -117,7 +112,6 @@ public class MainTest {
 
 	@Test(expected = NullPointerException.class)
 	public void testParseFilesInDirForInvalidFolderForReference() throws IOException {
-		String BASEDIR = "C:\\Users\\Masroor Hussain Syed\\Desktop\\UCalgary Courses\\Seng 300\\Assignment\\Assign 1\\src\\testing\\";
 		String dirPath = BASEDIR + "Invalid";
 		String type = "boolean";
 		Types testType = new Types(type);
@@ -126,7 +120,6 @@ public class MainTest {
 	
 	@Test(expected = NullPointerException.class)
 	public void testParseFilesInDirForInvalidFolderForDeclarations() throws IOException {
-		String BASEDIR = "C:\\Users\\Masroor Hussain Syed\\Desktop\\UCalgary Courses\\Seng 300\\Assignment\\Assign 1\\src\\testing\\";
 		String dirPath = BASEDIR + "Invalid";
 		String type = "boolean";
 		Types testType = new Types(type);
@@ -135,7 +128,6 @@ public class MainTest {
 	
 	@Test
 	public void testreadFileToStringForValidFile() throws IOException {
-		String BASEDIR = "C:\\Users\\Masroor Hussain Syed\\Desktop\\UCalgary Courses\\Seng 300\\Assignment\\Assign 1\\src\\testing\\";
 		String filePath = BASEDIR + "testFiles\\helloTest.txt";
 		String actual	= Main.readFileToString(filePath);
 		String expected = "hello its me!";
@@ -145,7 +137,6 @@ public class MainTest {
 	
 	@Test(expected = FileNotFoundException.class)
 	public void testreadFileToStringForInvalidFile() throws IOException {
-		String BASEDIR = "C:\\Users\\Masroor Hussain Syed\\Desktop\\UCalgary Courses\\Seng 300\\Assignment\\Assign 1\\src\\testing\\";
 		String filePath = BASEDIR + "testFiles\\invalid.txt";
 		String actual	= Main.readFileToString(filePath);
 		String expected = "hello its me!";
